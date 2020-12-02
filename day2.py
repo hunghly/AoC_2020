@@ -18,6 +18,21 @@ Each line gives the password policy and then the password. The password policy i
 In the above example, 2 passwords are valid. The middle password, cdefg, is not; it contains no instances of b, but needs at least 1. The first and third passwords are valid: they contain one a or nine c, both within the limits of their respective policies.
 
 How many passwords are valid according to their policies?
+
+
+--- Part Two ---
+While it appears you validated the passwords correctly, they don't seem to be what the Official Toboggan Corporate Authentication System is expecting.
+
+The shopkeeper suddenly realizes that he just accidentally explained the password policy rules from his old job at the sled rental place down the street! The Official Toboggan Corporate Policy actually works a little differently.
+
+Each policy actually describes two positions in the password, where 1 means the first character, 2 means the second character, and so on. (Be careful; Toboggan Corporate Policies have no concept of "index zero"!) Exactly one of these positions must contain the given letter. Other occurrences of the letter are irrelevant for the purposes of policy enforcement.
+
+Given the same example list from above:
+
+1-3 a: abcde is valid: position 1 contains a and position 3 does not.
+1-3 b: cdefg is invalid: neither position 1 nor position 3 contains b.
+2-9 c: ccccccccc is invalid: both position 2 and position 9 contain c.
+How many passwords are valid according to the new interpretation of the policies?
 """
 
 def validate_policy(policy):
@@ -30,20 +45,31 @@ def validate_policy(policy):
         return True
     return False
 
+def validate_policy_position(policy):
+    pos_1 = int(policy[0][0])
+    pos_2 = int(policy[0][1])
+    ch = policy[1]
+    pw = policy[2]
+    if pw[pos_1-1] == ch and pw[pos_2-1] == ch:
+        return False
+    elif pw[pos_1-1] == ch or pw[pos_2-1] == ch:
+        return True
+    return False
+
 def parse_policy(str):
     half = str.split(':')
-    limits = half[0].split(' ')[0].split('-') # get lower/upper bounds
+    digits = half[0].split(' ')[0].split('-') # get lower/upper bounds
     char = half[0].split(' ')[1] # get character for policy
     password = half[1].strip() # get password
-    return [limits, char, password]
+    return [digits, char, password]
 
 if __name__ == '__main__':
-    policy = parse_policy('1-3 a: abcde')
     valid_count = 0
     with open('day2.txt', 'r') as file:
         lines = file.readlines()
     for line in lines:
         policy = parse_policy(line)
-        if validate_policy(policy):
+        # if validate_policy(policy): # part I
+        if validate_policy_position(policy): # part II
             valid_count+=1
     print("valid_count is: ", valid_count)
