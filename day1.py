@@ -48,8 +48,7 @@ def find_2020(arr):
                 print("Match found ", item, arr[found])
                 break
         except:
-            print("Did not compute.")
-    return found
+            print("No match found")
 
 def find_2020_three_entries(arr):
     found = -1
@@ -65,8 +64,7 @@ def find_2020_three_entries(arr):
                 print("Match found ", item, arr[found])
                 break
         except:
-            print("Did not compute.")
-    return found
+            print("No match found")
 
 def add_to_equal(arr, val):
     found_item = -1
@@ -102,5 +100,28 @@ input = [
     1990, 1781, 1801, 1239, 1729, 1360, 1780, 1848, 1468, 1484, 1280, 1278,
     1851, 1903, 1894, 1731, 1451, 549, 1570
 ]
-find_2020_three_entries(input)
+find_2020(input)
+# find_2020_three_entries(input)
 # print(add_to_equal(input, 2020))
+
+def subset_sum(numbers, target, partial=[]):
+    s = sum(partial)
+
+    # check if partial sum is equals to target
+    if s == target:
+        print(f'sum({partial})={target} * 2={partial[0]*partial[1]}')
+        print("-----")
+        if len(partial) == 3:
+            print("=====")
+            print(f'*3={partial[0]*partial[1]*partial[2]}')
+    if s >= target:
+        return #if we reach the number why bother to continue
+
+    for i in range(len(numbers)):
+        n = numbers[i]
+        remaining = numbers[i+1:]
+        print(f"partial is {partial} remaining is {remaining}")
+        subset_sum(remaining, target, partial + [n])
+
+if __name__ == "__main__":
+    subset_sum(input, 2020)
