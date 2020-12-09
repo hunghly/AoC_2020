@@ -65,7 +65,6 @@ def parse_str(str):
     # print(bag_details)
    
 def bag_contains_color(bag_details, color):
-    main = bag_details[0] # first bag is always the  main
     for i in range(2, len(bag_details), 2):
         # print(i)
         # print("bag d", bag_details[i])
@@ -80,75 +79,69 @@ def get_bag_details(master_list, color):
             return bag
     return False
 
+def get_containing_bags(master_list, color):
+    curr_bag_detail_list = []
+    bag_details = get_bag_details(master_list, color)
+    curr_bag_detail_list.append(bag_details)
+    found_colors = []
+    found_colors.append(color)
+    while bag_details:
+        # if only 1 color that contains nothing then add and break
+        if len(bag_details) == 1:
+            curr_bag_detail_list.append(bag_details[0])
+            break
+        for i in range(2, len(bag_details),2):
+            print(bag_details[i])
+            curr_bag_detail_list.append(get_bag_details(master_list, bag_details[i]))
 
+        break
+    print(curr_bag_detail_list)
+
+# checks all bags for the bags that contain the color, whether directly or as a secondary form
 def check_bags(master_list, color):
-    count = 0
     matched_colors = []
-    line = 0
     # check every item in the master list to see what master item contains one of the colors
     for bag in master_list:
-    
-        # bag = master_list[i] # get the bag from the master_list
-        # print("-----")
-        # print(bag)
-        # print("-----")
-        # print(bag)
-        line+=1
-        # print("count is: ", count)
-
         # if the bag already  contains the color, then increment counter
         if bag_contains_color(bag, color) and not bag[0] in matched_colors:
-            print(f"{bag[0]} bag contains the {color}. Incrementing count... at line {line}")
             matched_colors.append(bag[0])
-            count+=1
-            # print("current count ", count)
-            print('matched colors: ', matched_colors)
-
             continue
         # also check bags within bags to see if any of them can hold your color
         for i in range(2, len(bag), 2):
-            # print("bag[", i,"]: ", bag[i])
             bag_details = get_bag_details(master_list, bag[i])
-            # print("details for bag: ", bag[i], ": " , bag_details)
-            # if bag_details[0] in matched_colors:
-            #     print(f"{bag[0]} contains {color} via {bag[i]} DETAILS:{bag_details}. Incrementing count... at line {line}")
-            #     count+=1
-            #     break
             if bag_contains_color(bag_details, color):
-                # print(bag_details)
                 if  not bag[0] in matched_colors:
                     matched_colors.append(bag[0])
                 if not bag_details[0] in matched_colors:
                     matched_colors.append(bag_details[0])
-                print(f"{bag[0]} contains {color} via {bag[i]} DETAILS:{bag_details}. Incrementing count... at line {line}")
-                count+=1
-                # print("count is: ", count)
-                print('matched colors: ', matched_colors)
-
                 break
-    # print("count is: ", count)
-    print(len(matched_colors))
-    return count
+    return matched_colors
+
+def find_all_bags(master_list, color):
+    curr_color_list = check_bags(master_list, color)
+    counter = 0
+    new_color_list = []
+    # we have the colors, now check all the bags that can contain that color
+    while counter < 2:
+        for bag in curr_color_list:
+            new_color_list = check_bags(master_list, bag)
+            for color in new_color_list:
+                if not color in curr_color_list: # if the color isn't in the list, then we need to add it
+                    curr_color_list.append(color)
+                    counter = 0
+        counter+=1
+        new_color_list.clear()
+    return curr_color_list
+
 
 if __name__ == "__main__":
     master_list = []
-    bag_details = []
     color = 'shiny gold'
-    bag_color_count = 0
     with open('day7.txt', 'r') as file:
         lines = file.readlines()
     # create master list
     for line in lines:
         master_list.append(parse_str(line))
-    # print("MASTER_LIST=", master_list)
-    # for item in master_list:
-        # print(item)
-    for line in lines:
-        bag_details = parse_str(line)
-        # print("All bag details: ", bag_details)
-        # if bag_contains_color(bag_details, color):
-            # bag_color_count+=1
-        bag_details.clear()
-    # print(get_bag_details(master_list, 'bright white'))
-    bag_color_count = check_bags(master_list, color)
-    print(f"Total number of {color} bags={bag_color_count}")
+    print(master_list)
+    get_containing_bags(master_list, color)
+    # all_color_bags = find_all_bags(master_list, color)
